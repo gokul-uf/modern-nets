@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import keras
+import os
 from keras.layers import Dense, Dropout, MaxoutDense, Input, Merge
 from keras.layers.merge import Concatenate
 from keras.models import Model
@@ -8,10 +9,11 @@ from keras.activations import relu
 from keras.datasets import mnist
 from keras.losses import binary_crossentropy
 from keras.optimizers import adam
-try:
-	import tqdm
-except:
-	print "TQDM not found, per epoch progress will not be shown"
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 
 NUM_EPOCH = 20000
 BATCH_SIZE = 32
@@ -85,6 +87,10 @@ def init_data():
 
 
 if __name__ == '__main__':
+	paths = ['images', 'discriminator', 'generator', 'gan']
+	for path in paths:
+		if not os.path.isdir(path):
+   			os.makedirs(path)
 	real_data, real_data_class = init_data()
 	print real_data.shape
 	print real_data_class.shape
@@ -114,7 +120,8 @@ if __name__ == '__main__':
 		gan_epoch_acc = []
 
 		np.random.shuffle(real_data_n_class)
-		for j in range(len(real_data) / BATCH_SIZE): 
+		# for j in range(len(real_data) / BATCH_SIZE): 
+		for j in range(5): 
 			start_index = j*BATCH_SIZE
 			batch_data_n_class = real_data_n_class[start_index: start_index + BATCH_SIZE]
 			batch_data = batch_data_n_class[:, :784]
@@ -129,8 +136,6 @@ if __name__ == '__main__':
 			disc_epoch_loss.append(d_loss)
 			disc_epoch_acc.append(d_acc)
 			
-			# gan_data = np.vstack((batch_data, generator_data))
-			# gan_class = np.concatenate((batch_class, batch_class), axis = 0)
 			gan_loss, gan_acc = gan.train_on_batch([batch_noise, batch_class], gan_labels) #CHECK
 			gan_epoch_loss.append(gan_loss)
 			gan_epoch_acc.append(gan_acc)
@@ -139,6 +144,23 @@ if __name__ == '__main__':
 		print "G Loss: {}, G Acc: {}".format(np.mean(gan_epoch_loss), np.mean(gan_epoch_acc))
 		print "D Loss: {}, D Acc: {}".format(np.mean(disc_epoch_loss), np.mean(disc_epoch_acc))		
 
+		if i % 50 == 0:
+			plt.title("Epoch: {}".format(i))
+			for num in range(10):
+				gen_class = get_one_hot(num).reshape(1, 10) # because we get (10, ), want (1, 10)
+				print gen_class.shape
+				for fig in range(1, 11):
+					gen_input = np.random.uniform(low = 0.5, high = 0.5, size = (1, 100))
+					gen_output = gen.predict([gen_input, gen_class]).reshape((28,28))
+					assert gen_output.shape == (28, 28)
+					plt.subplot(10,10, num*10 + fig)
+					plt.imshow(gen_output, interpolation='nearest', cmap = "gray_r")
+					plt.xticks([])
+					plt.yticks([])
+			plt.savefig("images/epoch_{}.png".format(i))
+			disc.save("discriminator/disc_{}.h5".format(i))
+			gen.save("generator/gen_{}.h5".format(i))
+			gan.save("gan/gan_{}.h5".format(i))
+			plt.close()
 
-	# a noise prior z with dimensionality 100 was drawn from a uniform distribution
-	# within the unit hypercube
+
