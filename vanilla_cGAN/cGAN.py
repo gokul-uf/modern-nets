@@ -141,7 +141,7 @@ if __name__ == '__main__':
 			gan_epoch_loss.append(gan_loss)
 			gan_epoch_acc.append(gan_acc)
 		
-		print "Epoch: {}".format(i)
+		print "Epoch: {} / {}".format(i, NUM_EPOCH)
 		print "G Loss: {}, G Acc: {}".format(np.mean(gan_epoch_loss), np.mean(gan_epoch_acc))
 		print "D Loss: {}, D Acc: {}".format(np.mean(disc_epoch_loss), np.mean(disc_epoch_acc))		
 
