@@ -120,8 +120,8 @@ if __name__ == '__main__':
 		gan_epoch_acc = []
 
 		np.random.shuffle(real_data_n_class)
-		# for j in range(len(real_data) / BATCH_SIZE): 
-		for j in range(5): 
+		for j in range(len(real_data) / BATCH_SIZE): 
+		# for j in range(5): 
 			start_index = j*BATCH_SIZE
 			batch_data_n_class = real_data_n_class[start_index: start_index + BATCH_SIZE]
 			batch_data = batch_data_n_class[:, :784]
@@ -158,9 +158,11 @@ if __name__ == '__main__':
 					plt.xticks([])
 					plt.yticks([])
 			plt.savefig("images/epoch_{}.png".format(i))
+			plt.close()
+
+		if i % 500 == 0:
 			disc.save("discriminator/disc_{}.h5".format(i))
 			gen.save("generator/gen_{}.h5".format(i))
 			gan.save("gan/gan_{}.h5".format(i))
-			plt.close()
-
+			
 
