@@ -9,6 +9,7 @@ from keras.activations import relu
 from keras.datasets import mnist
 from keras.losses import binary_crossentropy
 from keras.optimizers import adam
+from tqdm import tqdm
 
 import matplotlib
 matplotlib.use('Agg')
@@ -59,7 +60,7 @@ def freeze_layers(model, val):
 def GAN(discriminator, generator):
 	discriminator.trainable = False
 	discriminator.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-	print "in GAN"
+	# print "in GAN"
 	discriminator.summary()
 	gan_noise_input = Input((100,))
 	gan_label_input = Input((10,))
@@ -92,11 +93,11 @@ if __name__ == '__main__':
 		if not os.path.isdir(path):
    			os.makedirs(path)
 	real_data, real_data_class = init_data()
-	print real_data.shape
-	print real_data_class.shape
-	print "stacking"
+	# print real_data.shape
+	# print real_data_class.shape
+	# print "stacking"
 	real_data_n_class = np.hstack((real_data, real_data_class))
-	print real_data_n_class.shape
+	# print real_data_n_class.shape
 	gen = generator()
 	disc = discriminator()
 	print "Discriminator"
@@ -120,7 +121,7 @@ if __name__ == '__main__':
 		gan_epoch_acc = []
 
 		np.random.shuffle(real_data_n_class)
-		for j in range(len(real_data) / BATCH_SIZE): 
+		for j in tqdm(range(len(real_data) / BATCH_SIZE)): 
 		# for j in range(5): 
 			start_index = j*BATCH_SIZE
 			batch_data_n_class = real_data_n_class[start_index: start_index + BATCH_SIZE]
@@ -148,7 +149,7 @@ if __name__ == '__main__':
 			plt.title("Epoch: {}".format(i))
 			for num in range(10):
 				gen_class = get_one_hot(num).reshape(1, 10) # because we get (10, ), want (1, 10)
-				print gen_class.shape
+				# print gen_class.shape
 				for fig in range(1, 11):
 					gen_input = np.random.uniform(low = 0.5, high = 0.5, size = (1, 100))
 					gen_output = gen.predict([gen_input, gen_class]).reshape((28,28))
