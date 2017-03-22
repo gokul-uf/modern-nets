@@ -128,7 +128,7 @@ if __name__ == '__main__':
 			batch_data = batch_data_n_class[:, :784]
 			batch_class = batch_data_n_class[:, 784:]
 			
-			batch_noise = np.random.uniform(low = 0.5, high = 0.5, size = (BATCH_SIZE, 100))
+			batch_noise = np.random.uniform(low = -0.5, high = 0.5, size = (BATCH_SIZE, 100))
 			generator_data = gen.predict([batch_noise, batch_class])
 			
 			discriminator_data = np.vstack((batch_data, generator_data))
@@ -151,7 +151,9 @@ if __name__ == '__main__':
 				gen_class = get_one_hot(num).reshape(1, 10) # because we get (10, ), want (1, 10)
 				# print gen_class.shape
 				for fig in range(1, 11):
-					gen_input = np.random.uniform(low = 0.5, high = 0.5, size = (1, 100))
+					gen_input = np.random.uniform(low = -0.5, high = 0.5, size = (1, 100))
+					# print "noise: ", gen_input
+					# print "class: ", gen_class
 					gen_output = gen.predict([gen_input, gen_class]).reshape((28,28))
 					assert gen_output.shape == (28, 28)
 					plt.subplot(10,10, num*10 + fig)
