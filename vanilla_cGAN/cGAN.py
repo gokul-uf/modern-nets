@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
 		np.random.shuffle(real_data_n_class)
 		for j in tqdm(range(len(real_data) / BATCH_SIZE)): 
-		# for j in range(5): 
+		# for j in range(5): for debugging
 			start_index = j*BATCH_SIZE
 			batch_data_n_class = real_data_n_class[start_index: start_index + BATCH_SIZE]
 			batch_data = batch_data_n_class[:, :784]
